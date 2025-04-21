@@ -1,26 +1,12 @@
-// File: api/server.js
 const express = require("express");
-const fileRoutes = require("../routes/fileRoutes.js");
+require("dotenv").config();
+const fileRoutes = require("./routes/fileRoutes.js");
 const path = require("path");
-const serverless = require("serverless-http"); // WAJIB
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, "../public")));
-
-// Routes
-app.use("/", fileRoutes);
-
-// Error handling routes
-app.use((req, res, next) => {
-  res.status(404).sendFile(path.join(__dirname, "../public", "404.html"));
-});
-
-app.use((err, req, res, next) => {
-  res.status(500).sendFile(path.join(__dirname, "../public", "500.html"));
-});
-
-// Security headers
+// Security headers duluan
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
@@ -29,5 +15,12 @@ app.use((req, res, next) => {
   next();
 });
 
-module.exports = app;
-module.exports.handler = serverless(app);
+// Serve static
+app.use(express.static(path.join(__dirname, "public")));
+
+// Pakai route lo
+app.use("/", fileRoutes);
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
